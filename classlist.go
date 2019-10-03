@@ -2,13 +2,11 @@ package dom
 
 import (
 	"strings"
-
-	"golang.org/x/net/html"
 )
 
-// SplitClasslist takes an *html.Node and splits
+// SplitClasslist takes a *Node and splits
 // the nodes class string and returns the string slice
-func SplitClasslist(n *html.Node) []string {
+func SplitClasslist(n *Node) []string {
 	classnames := GetAttribute(n, "class")
 
 	// Split the classnames into a slice
@@ -17,6 +15,7 @@ func SplitClasslist(n *html.Node) []string {
 
 // BuildClasslist takes a selector string ".button.primary" and
 // returns a trimmed string slice containing the classnames [button primary]
+// with all trailing whitespace removed
 func BuildClasslist(s string) []string {
 	return Map(
 		Filter(strings.Split(s, "."), IsNotEmpty),

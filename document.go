@@ -4,11 +4,29 @@ import "golang.org/x/net/html"
 
 // GetDocumentBody recurses *html.Node until a <body> node is found or returns nil
 func GetDocumentBody(doc *html.Node) *html.Node {
-	fn := func(n *html.Node) bool {
+	pred := func(n *html.Node) bool {
 		return n.Type == html.ElementNode && n.Data == "body"
 	}
 
-	return FindOne(doc, fn)
+	var find func(n *html.Node, fn func(n *html.Node) bool) *html.Node
+
+	find = func(n *html.Node, fn func(n *html.Node) bool) *html.Node {
+		if fn(n) {
+			return n
+		}
+
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			found := find(c, fn)
+
+			if found != nil {
+				return found
+			}
+		}
+
+		return nil
+	}
+
+	return find(doc, pred)
 }
 
 // // FindAll recurses *html.Node returning all child *html.Node that pass the DomPredicate

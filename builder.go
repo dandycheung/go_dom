@@ -12,7 +12,7 @@ import (
 
 // Builder struct
 type Builder struct {
-	refs      []*html.Node
+	refs      []*Node
 	selectors []SelectorAll
 }
 
@@ -85,12 +85,12 @@ type Builder struct {
 
 // Build will successively execute each selector and update the
 // node tree with the results
-func (b *Builder) Build(n *html.Node) *Builder {
-	b.refs = []*html.Node{n}
+func (b *Builder) Build(n *Node) *Builder {
+	b.refs = []*Node{n}
 
 	// Loop over selectors
 	for _, fn := range b.selectors {
-		items := make([]*html.Node, 0)
+		items := make([]*Node, 0)
 
 		// Apply selector to each scalar
 		for _, n := range b.refs {

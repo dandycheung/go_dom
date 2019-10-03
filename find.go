@@ -1,17 +1,15 @@
 package dom
 
-import (
-	"golang.org/x/net/html"
-)
+var walkNode func(n *Node, fn Predicate, ns []*Node) []*Node
 
-// FindOne recurses *html.Node and children returning first node where Predicate returns true
-func FindOne(n *html.Node, fn Predicate) *html.Node {
+// FindOne recurses *Node and children returning first node where Predicate returns true
+func FindOne(n *Node, fn Predicate) *Node {
 	if fn(n) {
 		return n
 	}
 
-	for c := n.FirstChild; c != nil; c = c.NextSibling {
-		found := FindOne(c, fn)
+	for i := range n.Children {
+		found := FindOne(n.Children[i], fn)
 
 		if found != nil {
 			return found
@@ -21,21 +19,19 @@ func FindOne(n *html.Node, fn Predicate) *html.Node {
 	return nil
 }
 
-// FindAll recurses *html.Node returning all child *html.Node that pass the Predicate
-func FindAll(n *html.Node, fn Predicate) []*html.Node {
-	var walkNode func(n *html.Node, fn Predicate, ns []*html.Node) []*html.Node
-
-	walkNode = func(n *html.Node, fn Predicate, ns []*html.Node) []*html.Node {
+// FindAll recurses *Node returning all child *Node that pass the Predicate
+func FindAll(n *Node, fn Predicate) []*Node {
+	walkNode = func(n *Node, fn Predicate, ns []*Node) []*Node {
 		if fn(n) {
 			ns = append(ns, n)
 		}
 
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			ns = walkNode(c, fn, ns)
+		for i := range n.Children {
+			ns = walkNode(n.Children[i], fn, ns)
 		}
 
 		return ns
 	}
 
-	return walkNode(n, fn, make([]*html.Node, 0))
+	return walkNode(n, fn, make([]*Node, 0))
 }
