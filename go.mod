@@ -1,4 +1,4 @@
-module go_logger
+module go_dom
 
 go 1.12
 
