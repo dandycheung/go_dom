@@ -14,22 +14,6 @@ type Selector func(n *html.Node) *html.Node
 // and returns a slice of html nodes
 type SelectorAll func(n *html.Node) []*html.Node
 
-// NthChildSelector returns a selector that returns the child node at given a index
-// func NthChildSelector(i int) Selector {
-// 	return func(n *html.Node) []*html.Node {
-// 		f := n.FirstChild
-
-// 		for x := 0; x <= i; x++ {
-// 			if x == i {
-// 				return []*html.Node{f}
-// 			}
-// 			f = f.NextSibling
-// 		}
-
-// 		return nil
-// 	}
-// }
-
 // TagSelector returns a selector that returns this first node
 // that matches the provided tag
 func TagSelector(t string) Selector {
@@ -43,15 +27,15 @@ func TagSelector(t string) Selector {
 }
 
 // TagSelectorAll returns a selector that finds all nodes matching given tag name
-// func TagSelectorAll(t string) Selector {
-// 	predicate := func(n *html.Node) bool {
-// 		return n.Type == html.ElementNode && n.Data == t
-// 	}
+func TagSelectorAll(t string) SelectorAll {
+	predicate := func(n *html.Node) bool {
+		return n.Type == html.ElementNode && n.Data == t
+	}
 
-// 	return func(n *html.Node) []*html.Node {
-// 		return FindAll(n, predicate)
-// 	}
-// }
+	return func(n *html.Node) []*html.Node {
+		return FindAll(n, predicate)
+	}
+}
 
 // ClassNameSelector returns a selector that finds the first node
 // containing every item in classlist.
@@ -67,22 +51,53 @@ func ClassNameSelector(s string) Selector {
 	}
 }
 
-// ClassNameAllSelector returns a selector that finds all the nodes
+// ClassNameSelectorAll returns a selector that finds all the nodes
 // containing every item in classlist.
-// func ClassNameAllSelector(s string) Selector {
-// 	classlist := BuildClasslist(s)
+func ClassNameSelectorAll(s string) SelectorAll {
+	classlist := BuildClasslist(s)
 
-// 	predicate := func(n *html.Node) bool {
-// 		return ContainsClassname(n, classlist)
-// 	}
+	predicate := func(n *html.Node) bool {
+		return ContainsClassname(n, classlist)
+	}
 
-// 	return func(n *html.Node) []*html.Node {
-// 		return FindAll(n, predicate)
-// 	}
-// }
+	return func(n *html.Node) []*html.Node {
+		return FindAll(n, predicate)
+	}
+}
+
+// MakeQuerySelectorAll is a higher order function that takes a selector query string,
+// parses the query string into a slice of selectors, and returns a SelectorAll
+func MakeQuerySelectorAll(q string) SelectorAll {
+	qs := strings.Fields(q)
+	fns := make([]SelectorAll, 0)
+
+	for _, s := range qs {
+		fns = append(fns, parseSelectorQueryAll(s))
+	}
+
+	return func(n *html.Node) []*html.Node {
+		ns := []*html.Node{n}
+
+		for _, fn := range fns {
+			fs := make([]*html.Node, 0)
+
+			for _, node := range ns {
+				fs = append(fs, fn(node)...)
+			}
+
+			if len(fs) == 0 {
+				break
+			}
+
+			ns = fs
+		}
+
+		return ns
+	}
+}
 
 // MakeQuerySelector is a higher order function that takes a selector query string,
-// parses the query string into a slice of selectors, and returns a wrapped selector function
+// parses the query string into a slice of selectors, and returns a Selector
 func MakeQuerySelector(q string) Selector {
 	qs := strings.Fields(q)
 	fns := make([]Selector, 0)
@@ -111,5 +126,16 @@ func parseSelectorQuery(q string) Selector {
 		return ClassNameSelector(q)
 	default:
 		return TagSelector(q)
+	}
+}
+
+func parseSelectorQueryAll(q string) SelectorAll {
+	firstCh := q[0]
+
+	switch string(firstCh) {
+	case ".":
+		return ClassNameSelectorAll(q)
+	default:
+		return TagSelectorAll(q)
 	}
 }
