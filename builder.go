@@ -1,20 +1,10 @@
 package dom
 
-import (
-	"fmt"
-
-	"golang.org/x/net/html"
-)
-
 // var (
 // 	walkTree func(n *node, ns []*node) []*node
 // )
 
 // Builder struct
-type Builder struct {
-	refs      []*Node
-	selectors []SelectorAll
-}
 
 // GetElementByClassName adds a ClassNameSelector to builder
 // func (b *Builder) GetElementByClassName(s string) *Builder {
@@ -85,25 +75,25 @@ type Builder struct {
 
 // Build will successively execute each selector and update the
 // node tree with the results
-func (b *Builder) Build(n *Node) *Builder {
-	b.refs = []*Node{n}
+// func (b *Builder) Build(n *Node) *Builder {
+// 	b.refs = []*Node{n}
 
-	// Loop over selectors
-	for _, fn := range b.selectors {
-		items := make([]*Node, 0)
+// 	// Loop over selectors
+// 	for _, fn := range b.selectors {
+// 		items := make([]*Node, 0)
 
-		// Apply selector to each scalar
-		for _, n := range b.refs {
-			items = append(items, fn(n)...)
-		}
+// 		// Apply selector to each scalar
+// 		for _, n := range b.refs {
+// 			items = append(items, fn(n)...)
+// 		}
 
-		b.refs = items
-	}
+// 		b.refs = items
+// 	}
 
-	fmt.Println(b.refs[0])
+// 	fmt.Println(b.refs[0])
 
-	return b
-}
+// 	return b
+// }
 
 // // Join will collect the current tree scalars and return the html nodes
 // func (b *Builder) Join() []*html.Node {
@@ -111,26 +101,26 @@ func (b *Builder) Build(n *Node) *Builder {
 // }
 
 // NewBuilder returns a reference to a new builder instance
-func NewBuilder() *Builder {
-	return &Builder{}
-}
+// func NewBuilder() *Builder {
+// 	return &Builder{}
+// }
 
-func (b *Builder) QuerySelector(s string) *Builder {
-	qs := MakeQuerySelector(s)
-	b.selectors = append(b.selectors, wrapSelector(qs))
-	return b
-}
+// func (b *Builder) QuerySelector(s string) *Builder {
+// 	qs := MakeQuerySelector(s)
+// 	b.selectors = append(b.selectors, wrapSelector(qs))
+// 	return b
+// }
 
 // wrapSelector wraps a selector function and transforms the single output of the
 // selector to a slice
-func wrapSelector(s Selector) func(n *html.Node) []*html.Node {
-	return func(n *html.Node) []*html.Node {
-		val := s(n)
+// func wrapSelector(s Selector) func(n *html.Node) []*html.Node {
+// 	return func(n *html.Node) []*html.Node {
+// 		val := s(n)
 
-		if val == nil {
-			return make([]*html.Node, 0)
-		}
+// 		if val == nil {
+// 			return make([]*html.Node, 0)
+// 		}
 
-		return []*html.Node{val}
-	}
-}
+// 		return []*html.Node{val}
+// 	}
+// }

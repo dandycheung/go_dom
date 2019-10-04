@@ -2,11 +2,13 @@ package dom
 
 import (
 	"strings"
+
+	"golang.org/x/net/html"
 )
 
 // SplitClasslist takes a *Node and splits
 // the nodes class string and returns the string slice
-func SplitClasslist(n *Node) []string {
+func SplitClasslist(n *html.Node) []string {
 	classnames := GetAttribute(n, "class")
 
 	// Split the classnames into a slice
