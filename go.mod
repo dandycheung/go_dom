@@ -1,4 +1,4 @@
-module go_dom
+module github.com/jpg013/go_dom
 
 go 1.12
 
