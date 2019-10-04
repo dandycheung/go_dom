@@ -22,7 +22,7 @@ func FindOne(n *html.Node, fn Predicate) *html.Node {
 }
 
 // FindAll recurses *Node returning all child *Node that pass the Predicate
-func FindAll(n *html.Node, fn Predicate) []*Node {
+func FindAll(n *html.Node, fn Predicate) []*html.Node {
 	walkNode = func(n *html.Node, fn Predicate, ns []*html.Node) []*html.Node {
 		if fn(n) {
 			ns = append(ns, n)

@@ -8,11 +8,11 @@ import (
 
 // Selector type represents a function that accepts an html node
 // and returns a single html node
-type Selector func(n *Node) *Node
+type Selector func(n *html.Node) *html.Node
 
 // SelectorAll type represents a function that accepts an html node
 // and returns a slice of html nodes
-type SelectorAll func(n *Node) []*Node
+type SelectorAll func(n *html.Node) []*html.Node
 
 // NthChildSelector returns a selector that returns the child node at given a index
 // func NthChildSelector(i int) Selector {
@@ -33,11 +33,11 @@ type SelectorAll func(n *Node) []*Node
 // TagSelector returns a selector that returns this first node
 // that matches the provided tag
 func TagSelector(t string) Selector {
-	predicate := func(n *Node) bool {
+	predicate := func(n *html.Node) bool {
 		return n.Type == html.ElementNode && n.Data == t
 	}
 
-	return func(n *Node) *Node {
+	return func(n *html.Node) *html.Node {
 		return FindOne(n, predicate)
 	}
 }
@@ -58,11 +58,11 @@ func TagSelector(t string) Selector {
 func ClassNameSelector(s string) Selector {
 	classlist := BuildClasslist(s)
 
-	predicate := func(n *Node) bool {
+	predicate := func(n *html.Node) bool {
 		return ContainsClassname(n, classlist)
 	}
 
-	return func(n *Node) *Node {
+	return func(n *html.Node) *html.Node {
 		return FindOne(n, predicate)
 	}
 }
@@ -91,7 +91,7 @@ func MakeQuerySelector(q string) Selector {
 		fns = append(fns, parseSelectorQuery(s))
 	}
 
-	return func(n *Node) *Node {
+	return func(n *html.Node) *html.Node {
 		for _, fn := range fns {
 			n = fn(n)
 			if n == nil {
