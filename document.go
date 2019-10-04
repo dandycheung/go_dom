@@ -1,6 +1,10 @@
 package dom
 
-import "golang.org/x/net/html"
+import (
+	"io"
+
+	"golang.org/x/net/html"
+)
 
 // GetDocumentBody recurses *html.Node until a <body> node is found or returns nil
 func GetDocumentBody(doc *html.Node) *html.Node {
@@ -27,6 +31,13 @@ func GetDocumentBody(doc *html.Node) *html.Node {
 	}
 
 	return find(doc, pred)
+}
+
+// ParseHTMLDocument takes an io.ReadCloser and converts it to html.Node
+func ParseHTMLDocument(r io.ReadCloser) (*html.Node, error) {
+	defer r.Close()
+
+	return html.Parse(r)
 }
 
 // // FindAll recurses *html.Node returning all child *html.Node that pass the DomPredicate
