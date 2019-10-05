@@ -2,7 +2,6 @@ package dom
 
 import (
 	"io"
-	"io/ioutil"
 	"strings"
 
 	"golang.org/x/net/html"
@@ -43,15 +42,13 @@ func RemoveNoScriptTag(data string) string {
 
 // ParseHTMLDocument takes an io.ReadCloser and converts it to html.Node
 func ParseHTMLDocument(r io.ReadCloser) (*html.Node, error) {
-	data, err := ioutil.ReadAll(r)
+	doc, err := html.Parse(r)
 
 	if err != nil {
-		return nil, err
+		panic("error parsing document")
 	}
 
-	hdata := RemoveNoScriptTag(string(data))
-
-	return html.Parse(strings.NewReader(hdata))
+	return doc, nil
 }
 
 // // FindAll recurses *html.Node returning all child *html.Node that pass the DomPredicate
