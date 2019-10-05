@@ -6,7 +6,7 @@ import "golang.org/x/net/html"
 // of the first image element it finds.
 func ParseImageSrc(n *html.Node) string {
 	fn := func(n *html.Node) bool {
-		if n.Type == html.ElementNode && n.Data == "image" {
+		if n.Type == html.ElementNode && n.Data == "img" {
 			return true
 		}
 		return false
