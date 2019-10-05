@@ -2,6 +2,8 @@ package dom
 
 import (
 	"io"
+	"io/ioutil"
+	"strings"
 
 	"golang.org/x/net/html"
 )
@@ -33,11 +35,23 @@ func GetDocumentBody(doc *html.Node) *html.Node {
 	return find(doc, pred)
 }
 
+// RemoveNoScriptTag Removes <noscript> and </noscript> in HTML so x/net/html would parse its content as expected.
+func RemoveNoScriptTag(data string) string {
+	hdata := strings.Replace(data, "<noscript>", "", -1)
+	return strings.Replace(hdata, "</noscript>", "", -1)
+}
+
 // ParseHTMLDocument takes an io.ReadCloser and converts it to html.Node
 func ParseHTMLDocument(r io.ReadCloser) (*html.Node, error) {
-	defer r.Close()
+	data, err := ioutil.ReadAll(r)
 
-	return html.Parse(r)
+	if err != nil {
+		return nil, err
+	}
+
+	hdata := RemoveNoScriptTag(string(data))
+
+	return html.Parse(strings.NewReader(hdata))
 }
 
 // // FindAll recurses *html.Node returning all child *html.Node that pass the DomPredicate
