@@ -9,6 +9,10 @@ import (
 	"golang.org/x/net/html"
 )
 
+// StyleDeclarations represents a map of classnames that maps to
+// a map of style key values
+type StyleDeclarations map[string]map[string]string
+
 // GetAttribute accepts an *html.Node and a string key and returns the attribute value
 func GetAttribute(n *html.Node, k string) string {
 	var s string
@@ -23,10 +27,10 @@ func GetAttribute(n *html.Node, k string) string {
 	return s
 }
 
-// ParseStyleData takes a style element and parses the data into a map of
+// ParseStyleNodeBody takes a style node and parses the data into a map of
 // classnames and attribute key / values
-func ParseStyleData(n *html.Node) map[string]map[string]string {
-	styleMap := make(map[string]map[string]string)
+func ParseStyleNodeBody(n *html.Node) StyleDeclarations {
+	styleMap := make(StyleDeclarations)
 
 	// require node to be a style node
 	if n.Type != html.ElementNode || n.Data != "style" {
